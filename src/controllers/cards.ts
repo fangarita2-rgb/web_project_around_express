@@ -10,6 +10,6 @@ export const getCards = async (req: Request, res: Response) => {
     const data = await fs.readFile(cardsPath, 'utf-8');
     res.json(JSON.parse(data));
   } catch (error) {
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ message: 'An error has ocurred on the server' });
   }
 };
