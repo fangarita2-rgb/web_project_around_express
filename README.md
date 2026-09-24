@@ -12,7 +12,44 @@ Este proyecto es una API REST desarrollada con **Node.js**, **Express** y **Type
 - **Lenguaje:** TypeScript
 - **Framework:** Express v5
 - **Módulos nativos:** `node:fs/promises`, `node:path`
-- **Herramientas de desarrollo:** `tsx`, `eslint`, `prettier`
+- **Herramientas de desarrollo:** `tsx`, `eslint`, `prettier`, `typescript-eslint`
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+web_project_around_express/
+├── data/
+│   ├── cards.json
+│   └── users.json
+├── src/
+│   ├── controllers/
+│   │   ├── cards.ts
+│   │   └── users.ts
+│   ├── routes/
+│   │   ├── cards.ts
+│   │   └── users.ts
+│   └── app.ts
+├── .editorconfig
+├── .gitignore
+├── eslint.config.js
+├── package.json
+├── README.md
+└── tsconfig.json
+```
+
+---
+
+## 🔌 Rutas de la API
+
+| Método     | Ruta               | Descripción                      | Respuesta de error                                        |
+| ---------- | ------------------ | -------------------------------- | --------------------------------------------------------- |
+| GET        | `/users`           | Lista JSON de todos los usuarios | —                                                         |
+| GET        | `/users/:id`       | Usuario por ID                   | 404 `{ "message": "User ID not found" }`                  |
+| GET        | `/cards`           | Lista JSON de todas las tarjetas | —                                                         |
+| Cualquiera | Ruta inexistente   | —                                | 404 `{ "message": "Requested resource not found" }`       |
+| Cualquiera | Error del servidor | —                                | 500 `{ "message": "An error has ocurred on the server" }` |
 
 ---
 
@@ -29,16 +66,18 @@ Este proyecto es una API REST desarrollada con **Node.js**, **Express** y **Type
 - Se implementaron controladores en `src/controllers/` utilizando funciones asíncronas (`async/await`).
 - Se utilizó el módulo `node:fs/promises` para realizar la lectura no bloqueante de los archivos de datos (`cards.json` y `users.json`).
 - Se empleó `path.join` junto con `import.meta.dirname` para construir rutas absolutas seguras hacia los archivos de datos.
-- Se implementó manejo de errores con bloques `try...catch` para responder con un código HTTP `500` e indicar un error interno del servidor en caso de fallos de lectura.
+- Se implementó manejo de errores con bloques `try...catch` para responder con código HTTP `500` en caso de fallos.
 
 ### 3. Definición de Rutas y Servidor
 
-- Se estructuraron las rutas en la carpeta `src/routes/` para separar la lógica de enrutamiento de los controladores.
-- Se configuró la aplicación principal en `src/app.ts` para conectar las rutas y levantar el servidor.
+- Se estructuraron las rutas en `src/routes/` para separar la lógica de enrutamiento de los controladores.
+- Se configuró la aplicación principal en `src/app.ts` para conectar las rutas y levantar el servidor en el puerto 3000.
+- Se agregó un manejador global de rutas no encontradas (404).
 
 ### 4. Control de Calidad y Scripts
 
-- Se agregaron scripts en `package.json` para ejecutar el servidor en modo desarrollo (`npm run dev`), realizar la compilación (`npm run build`) y validar el código con linter (`npm run lint`).
+- Se configuró ESLint con `typescript-eslint` y `prettier` para mantener la calidad del código.
+- Se agregaron scripts en `package.json` para desarrollo, compilación, inicio y linting.
 
 ---
 
