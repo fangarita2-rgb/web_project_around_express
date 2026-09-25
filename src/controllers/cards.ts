@@ -9,7 +9,7 @@ export const getCards = async (req: Request, res: Response) => {
   try {
     const data = await fs.readFile(cardsPath, 'utf-8');
     res.json(JSON.parse(data));
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'An error has ocurred on the server' });
   }
 };

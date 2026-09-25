@@ -8,7 +8,7 @@ export const getUsers = async (req: Request, res: Response) => {
   try {
     const data = await fs.readFile(usersPath, 'utf-8');
     res.json(JSON.parse(data));
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'An error has ocurred on the server' });
   }
 };
@@ -23,7 +23,7 @@ export const getUserById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'User ID not found' });
     }
     res.json(user);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: 'An error has ocurred on the server' });
   }
 };
