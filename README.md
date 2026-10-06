@@ -1,83 +1,106 @@
-# Tripleten web_project_around_express
-
 # Web Project Around Express
 
-Este proyecto es una API REST desarrollada con **Node.js**, **Express** y **TypeScript**, que permite gestionar y consultar datos de usuarios y tarjetas desde archivos JSON de forma asíncrona.
+API REST desarrollada con **Node.js**, **Express**, **TypeScript** y **MongoDB**, que permite gestionar usuarios y tarjetas con operaciones CRUD completas y manejo centralizado de errores.
 
 ---
 
 ## 🛠️ Tecnologías y Herramientas Utilizadas
 
 - **Entorno de ejecución:** Node.js
-- **Lenguaje:** TypeScript
+- **Lenguaje:** TypeScript (Módulos ES)
 - **Framework:** Express v5
-- **Módulos nativos:** `node:fs/promises`, `node:path`
+- **Base de datos:** MongoDB con Mongoose
 - **Herramientas de desarrollo:** `tsx`, `eslint`, `prettier`, `typescript-eslint`
 
 ---
 
 ## 📁 Estructura del Proyecto
 
-```
 web_project_around_express/
-├── data/
-│   ├── cards.json
-│   └── users.json
 ├── src/
-│   ├── controllers/
-│   │   ├── cards.ts
-│   │   └── users.ts
-│   ├── routes/
-│   │   ├── cards.ts
-│   │   └── users.ts
-│   └── app.ts
+│ ├── controllers/
+│ │ ├── cards.ts
+│ │ └── users.ts
+│ ├── middleware/
+│ │ └── error-handler.ts
+│ ├── models/
+│ │ ├── card.ts
+│ │ └── user.ts
+│ ├── routes/
+│ │ ├── cards.ts
+│ │ ├── index.ts
+│ │ └── users.ts
+│ ├── types/
+│ │ └── express/
+│ │ └── index.d.ts
+│ └── app.ts
 ├── .editorconfig
 ├── .gitignore
 ├── eslint.config.js
 ├── package.json
 ├── README.md
 └── tsconfig.json
-```
 
 ---
 
 ## 🔌 Rutas de la API
 
-| Método     | Ruta               | Descripción                      | Respuesta de error                                        |
-| ---------- | ------------------ | -------------------------------- | --------------------------------------------------------- |
-| GET        | `/users`           | Lista JSON de todos los usuarios | —                                                         |
-| GET        | `/users/:id`       | Usuario por ID                   | 404 `{ "message": "User ID not found" }`                  |
-| GET        | `/cards`           | Lista JSON de todas las tarjetas | —                                                         |
-| Cualquiera | Ruta inexistente   | —                                | 404 `{ "message": "Requested resource not found" }`       |
-| Cualquiera | Error del servidor | —                                | 500 `{ "message": "An error has ocurred on the server" }` |
+### Usuarios
+
+| Método | Ruta               | Descripción                      |
+| ------ | ------------------ | -------------------------------- |
+| GET    | `/users`           | Devuelve todos los usuarios      |
+| GET    | `/users/me`        | Devuelve el usuario actual       |
+| GET    | `/users/:id`       | Devuelve un usuario por su `_id` |
+| POST   | `/users`           | Crea un nuevo usuario            |
+| PATCH  | `/users/me`        | Actualiza el perfil del usuario  |
+| PATCH  | `/users/me/avatar` | Actualiza el avatar del usuario  |
+
+### Tarjetas
+
+| Método | Ruta               | Descripción                      |
+| ------ | ------------------ | -------------------------------- |
+| GET    | `/cards`           | Devuelve todas las tarjetas      |
+| POST   | `/cards`           | Crea una nueva tarjeta           |
+| DELETE | `/cards/:id`       | Elimina una tarjeta por su `_id` |
+| PUT    | `/cards/:id/likes` | Da like a una tarjeta            |
+| DELETE | `/cards/:id/likes` | Quita el like a una tarjeta      |
+
+### Códigos de error
+
+| Código | Descripción                                                                 |
+| ------ | --------------------------------------------------------------------------- |
+| 400    | Datos inválidos o `_id` con formato incorrecto                              |
+| 404    | Recurso no encontrado — `{ "message": "Requested resource not found" }`     |
+| 500    | Error del servidor — `{ "message": "Ha ocurrido un error en el servidor" }` |
 
 ---
 
-## 📋 Procedimiento Realizado
+## 📋 Funcionalidades Implementadas
 
-### 1. Configuración del Entorno y TypeScript
+### 1. Conexión a MongoDB
 
-- Se inicializó la configuración de TypeScript (`tsconfig.json`) para trabajar con módulos ES (`"type": "module"`).
-- Se definieron los directorios de entrada (`src/`) y salida (`dist/`).
-- Se añadieron las definiciones de tipos necesarias (`@types/express`, `@types/node`).
+- Conexión a `mongodb://127.0.0.1:27017/aroundb` mediante Mongoose al iniciar la aplicación.
 
-### 2. Creación de Controladores Asíncronos
+### 2. Modelos y Esquemas
 
-- Se implementaron controladores en `src/controllers/` utilizando funciones asíncronas (`async/await`).
-- Se utilizó el módulo `node:fs/promises` para realizar la lectura no bloqueante de los archivos de datos (`cards.json` y `users.json`).
-- Se empleó `path.join` junto con `import.meta.dirname` para construir rutas absolutas seguras hacia los archivos de datos.
-- Se implementó manejo de errores con bloques `try...catch` para responder con código HTTP `500` en caso de fallos.
+- **User:** campos `name`, `about` (string, 2–30 caracteres) y `avatar` (URL validada con expresión regular), todos obligatorios.
+- **Card:** campos `name` (string, 2–30 caracteres), `link` (URL validada), `owner` (ObjectId referencia a User), `likes` (array de ObjectId, vacío por defecto) y `createdAt` (fecha, valor por defecto `Date.now`).
 
-### 3. Definición de Rutas y Servidor
+### 3. Autorización Temporal
 
-- Se estructuraron las rutas en `src/routes/` para separar la lógica de enrutamiento de los controladores.
-- Se configuró la aplicación principal en `src/app.ts` para conectar las rutas y levantar el servidor en el puerto 3000.
-- Se agregó un manejador global de rutas no encontradas (404).
+- Middleware que agrega `req.user._id` a cada petición, tipado correctamente mediante extensión de tipos en `src/types/express/index.d.ts`.
 
-### 4. Control de Calidad y Scripts
+### 4. Campo `isLiked`
 
-- Se configuró ESLint con `typescript-eslint` y `prettier` para mantener la calidad del código.
-- Se agregaron scripts en `package.json` para desarrollo, compilación, inicio y linting.
+- Todas las rutas que devuelven tarjetas incluyen el campo booleano `isLiked`, calculado comparando el array `likes` con el `_id` del usuario actual.
+
+### 5. Manejo Centralizado de Errores
+
+- Middleware `errorHandler` registrado al final de la aplicación con cuatro parámetros (`err, req, res, next`).
+- Los errores de validación y casteo de Mongoose se convierten automáticamente en respuestas `400`.
+- Los errores inesperados responden con `500` ocultando el mensaje interno.
+- Códigos de estado asignados de forma type-safe con `Object.assign`.
 
 ---
 
