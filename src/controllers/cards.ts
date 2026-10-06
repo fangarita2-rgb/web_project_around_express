@@ -26,7 +26,10 @@ export const createCard = async (req: Request, res: Response): Promise<void> => 
   }
 
   const card = await Card.create({ name, link, owner });
-  res.status(201).json(card);
+  res.status(201).json({
+    ...card.toObject(),
+    isLiked: false,
+  });
 };
 
 // DELETE /cards/:id — Elimina una tarjeta por su _id
