@@ -1,29 +1,91 @@
 import type { Request, Response } from 'express';
-import path from 'node:path';
-import fs from 'node:fs/promises';
+import User from '../models/user.js';
 
-const usersPath = path.join(import.meta.dirname, '..', '..', 'data', 'users.json');
-
-export const getUsers = async (req: Request, res: Response) => {
-  try {
-    const data = await fs.readFile(usersPath, 'utf-8');
-    res.json(JSON.parse(data));
-  } catch {
-    res.status(500).json({ message: 'An error has ocurred on the server' });
-  }
+// GET /users — Devuelve todos los usuarios
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
+  const users = await User.find({});
+  res.json({ data: users });
 };
 
-export const getUserById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const data = await fs.readFile(usersPath, 'utf-8');
-    const users = JSON.parse(data);
-    const user = users.find((u: { _id: string }) => u._id === id);
-    if (!user) {
-      return res.status(404).json({ message: 'User ID not found' });
-    }
-    res.json(user);
-  } catch {
-    res.status(500).json({ message: 'An error has ocurred on the server' });
+// GET /users/me — Devuelve el usuario actual
+export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw Object.assign(new Error('No autorizado: ID de usuario no presente'), {
+      statusCode: 401,
+    });
   }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw Object.assign(new Error('No se encontró el usuario actual'), {
+      statusCode: 404,
+    });
+  }
+
+  res.json({ data: user });
+};
+
+// GET /users/:id — Devuelve un usuario por su _id
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw Object.assign(new Error('No se encontró ningún usuario con ese id'), {
+      statusCode: 404,
+    });
+  }
+
+  res.json({ data: user });
+};
+
+// POST /users — Crea un nuevo usuario
+export const createUser = async (req: Request, res: Response): Promise<void> => {
+  const { name, about, avatar } = req.body;
+  const user = await User.create({ name, about, avatar });
+
+  res.status(201).json({ data: user });
+};
+
+// PATCH /users/me — Actualiza el perfil del usuario actual
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?._id;
+  const { name, about } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { name, about },
+    { new: true, runValidators: true },
+  );
+
+  if (!user) {
+    throw Object.assign(new Error('No se encontró el usuario actual'), {
+      statusCode: 404,
+    });
+  }
+
+  res.json({ data: user });
+};
+
+// PATCH /users/me/avatar — Actualiza el avatar del usuario actual
+export const updateAvatar = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?._id;
+  const { avatar } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { avatar },
+    { new: true, runValidators: true },
+  );
+
+  if (!user) {
+    throw Object.assign(new Error('No se encontró el usuario actual'), {
+      statusCode: 404,
+    });
+  }
+
+  res.json({ data: user });
 };
