@@ -11,7 +11,7 @@ export const getCards = async (req: Request, res: Response): Promise<void> => {
     isLiked: card.likes.some((id) => id.toString() === userId),
   }));
 
-  res.json({ data: cardsWithIsLiked });
+  res.json(cardsWithIsLiked);
 };
 
 // POST /cards — Crea una nueva tarjeta
@@ -26,7 +26,7 @@ export const createCard = async (req: Request, res: Response): Promise<void> => 
   }
 
   const card = await Card.create({ name, link, owner });
-  res.status(201).json({ data: card });
+  res.status(201).json(card);
 };
 
 // DELETE /cards/:id — Elimina una tarjeta por su _id
@@ -40,7 +40,7 @@ export const deleteCard = async (req: Request, res: Response): Promise<void> => 
     });
   }
 
-  res.json({ message: 'Tarjeta eliminada con éxito', data: card });
+  res.json(card);
 };
 
 // PUT /cards/:id/likes — Da like a una tarjeta
@@ -60,10 +60,8 @@ export const likeCard = async (req: Request, res: Response): Promise<void> => {
   }
 
   res.json({
-    data: {
-      ...card.toObject(),
-      isLiked: card.likes.some((id) => id.toString() === userId),
-    },
+    ...card.toObject(),
+    isLiked: card.likes.some((id) => id.toString() === userId),
   });
 };
 
@@ -84,9 +82,7 @@ export const dislikeCard = async (req: Request, res: Response): Promise<void> =>
   }
 
   res.json({
-    data: {
-      ...card.toObject(),
-      isLiked: card.likes.some((id) => id.toString() === userId),
-    },
+    ...card.toObject(),
+    isLiked: card.likes.some((id) => id.toString() === userId),
   });
 };

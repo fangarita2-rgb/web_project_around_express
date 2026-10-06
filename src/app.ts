@@ -1,8 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import express from 'express';
 import mongoose from 'mongoose';
-import usersRouter from './routes/users.js';
-import cardsRouter from './routes/cards.js';
+import router from './routes/index.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 const app = express();
@@ -11,31 +10,27 @@ const PORT = 3000;
 mongoose.connect('mongodb://127.0.0.1:27017/aroundb')
   // eslint-disable-next-line no-console
   .then(() => console.log('Conectado a MongoDB'))
+  // eslint-disable-next-line no-console
   .catch((err) => console.error('Error de conexión', err));
 
 app.use(express.json());
 
-// Middleware temporal de autorización
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.user = {
-    _id: '6702d...', // Tu ID de prueba
+    _id: 'fangarita2',
   };
   next();
 });
 
-// Rutas
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
+app.use(router);
 
-// Manejo de ruta no encontrada (404)
 app.use((req: Request, res: Response) => {
   res.status(404).json({ message: 'Requested resource not found' });
 });
 
-// Middleware centralizado de errores (DEBE IR AL FINAL)
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`App listening on port ${PORT}`);
 });

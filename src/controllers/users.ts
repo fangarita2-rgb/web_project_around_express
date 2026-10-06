@@ -4,7 +4,7 @@ import User from '../models/user.js';
 // GET /users — Devuelve todos los usuarios
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await User.find({});
-  res.json({ data: users });
+  res.json(users);
 };
 
 // GET /users/me — Devuelve el usuario actual
@@ -25,7 +25,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
     });
   }
 
-  res.json({ data: user });
+  res.json(user);
 };
 
 // GET /users/:id — Devuelve un usuario por su _id
@@ -39,15 +39,14 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
     });
   }
 
-  res.json({ data: user });
+  res.json(user);
 };
 
 // POST /users — Crea un nuevo usuario
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   const { name, about, avatar } = req.body;
   const user = await User.create({ name, about, avatar });
-
-  res.status(201).json({ data: user });
+  res.status(201).json(user);
 };
 
 // PATCH /users/me — Actualiza el perfil del usuario actual
@@ -67,7 +66,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     });
   }
 
-  res.json({ data: user });
+  res.json(user);
 };
 
 // PATCH /users/me/avatar — Actualiza el avatar del usuario actual
@@ -87,5 +86,5 @@ export const updateAvatar = async (req: Request, res: Response): Promise<void> =
     });
   }
 
-  res.json({ data: user });
+  res.json(user);
 };
