@@ -45,6 +45,13 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 // POST /users — Crea un nuevo usuario
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   const { name, about, avatar } = req.body;
+
+  if (!name || !about || !avatar) {
+    throw Object.assign(new Error('Los campos name, about y avatar son obligatorios'), {
+      statusCode: 400,
+    });
+  }
+
   const user = await User.create({ name, about, avatar });
   res.status(201).json(user);
 };
@@ -53,6 +60,12 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?._id;
   const { name, about } = req.body;
+
+  if (!name || !about) {
+    throw Object.assign(new Error('Los campos name y about son obligatorios'), {
+      statusCode: 400,
+    });
+  }
 
   const user = await User.findByIdAndUpdate(
     userId,
@@ -73,6 +86,12 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 export const updateAvatar = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?._id;
   const { avatar } = req.body;
+
+  if (!avatar) {
+    throw Object.assign(new Error('El campo avatar es obligatorio'), {
+      statusCode: 400,
+    });
+  }
 
   const user = await User.findByIdAndUpdate(
     userId,

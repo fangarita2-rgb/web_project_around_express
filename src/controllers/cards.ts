@@ -19,6 +19,12 @@ export const createCard = async (req: Request, res: Response): Promise<void> => 
   const { name, link } = req.body;
   const owner = req.user?._id;
 
+  if (!name || !link) {
+    throw Object.assign(new Error('Los campos name y link son obligatorios'), {
+      statusCode: 400,
+    });
+  }
+
   if (!owner) {
     throw Object.assign(new Error('No autorizado: ID de usuario no presente'), {
       statusCode: 401,
