@@ -16,30 +16,32 @@ API REST desarrollada con **Node.js**, **Express**, **TypeScript** y **MongoDB**
 
 ## 📁 Estructura del Proyecto
 
+```
 web_project_around_express/
 ├── src/
-│ ├── controllers/
-│ │ ├── cards.ts
-│ │ └── users.ts
-│ ├── middleware/
-│ │ └── error-handler.ts
-│ ├── models/
-│ │ ├── card.ts
-│ │ └── user.ts
-│ ├── routes/
-│ │ ├── cards.ts
-│ │ ├── index.ts
-│ │ └── users.ts
-│ ├── types/
-│ │ └── express/
-│ │ └── index.d.ts
-│ └── app.ts
+│   ├── controllers/
+│   │   ├── cards.ts
+│   │   └── users.ts
+│   ├── middleware/
+│   │   └── error-handler.ts
+│   ├── models/
+│   │   ├── card.ts
+│   │   └── user.ts
+│   ├── routes/
+│   │   ├── cards.ts
+│   │   ├── index.ts
+│   │   └── users.ts
+│   ├── types/
+│   │   └── express/
+│   │       └── index.d.ts
+│   └── app.ts
 ├── .editorconfig
 ├── .gitignore
 ├── eslint.config.js
 ├── package.json
 ├── README.md
 └── tsconfig.json
+```
 
 ---
 
